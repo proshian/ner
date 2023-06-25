@@ -1,4 +1,4 @@
-from utils import *
+from utils.markup import *
 from sklearn.model_selection import train_test_split
 
 
@@ -24,4 +24,3 @@ if __name__ == "__main__":
     train_df, val_df = train_test_split(train_df, test_size=0.1)
     train_df.reset_index(drop = True, inplace= True)
     val_df.reset_index(drop = True, inplace= True)
-    

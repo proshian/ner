@@ -4,6 +4,7 @@ from sklearn.metrics import f1_score, accuracy_score
 from torch.optim import Adam, AdamW
 from model import CNN_LSTM
 from torch import nn
+import matplotlib.pyplot as plt
 
 def train_model(model, criterion, optimizer, num_epochs, dataloader, device):
     all_true_labels = []
@@ -57,9 +58,33 @@ def train_model(model, criterion, optimizer, num_epochs, dataloader, device):
     return all_true_labels, all_preds, inputs_str, loss_list, acc_list, f1_list
 
 
+def graf(loss, acc, f1, epoch_num):
+    epox_list = [i for i in range(epoch_num)]
+    fig, ax = plt.subplots(2, 3, figsize=(26, 13))
+    ax[0, 0].plot(epox_list, loss['train'])
+    ax[0, 0].set_title("Изменение потерь на обучающей выборке")
+    ax[0, 1].plot(epox_list, acc['train'])
+    ax[0, 1].set_title("Изменение точности на обучающей выборке")
+    ax[0, 2].plot(epox_list, f1['train'])
+    ax[0, 2].set_title("Изменение f1-score на обучающей выборке")
+    ax[1, 0].plot(epox_list, loss['val'])
+    ax[1, 0].set_title("Изменение потерь на валидационной выборке")
+    ax[1, 1].plot(epox_list, acc['val'])
+    ax[1, 1].set_title("Изменение точности на валидационной выборке")
+    ax[1, 2].plot(epox_list, f1['val'])
+    ax[1, 2].set_title("Изменение f1-score на валидационной выборке")
+    plt.show()
+
+
+
 if __name__ == "__main__":
+    epoch_num = 20
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     n_classes = len(vocab_lables)
+
     model = CNN_LSTM(len(vocab), n_classes = n_classes).to(device)
     criterion = nn.CrossEntropyLoss().to(device)
     optimizer = Adam(model.parameters(), lr = 3e-4)
+    
+    all_true_labels, all_preds, inputs_str, loss, acc, f1 = train_model(model, criterion, optimizer, epoch_num, dataloader,device)
+    graf(loss, acc, f1)
