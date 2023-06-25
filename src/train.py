@@ -5,6 +5,8 @@ from torch.optim import Adam, AdamW
 from model import CNN_LSTM
 from torch import nn
 import matplotlib.pyplot as plt
+from preprocess import read_vocab, TokenDataset
+import pandas as pd
 
 def train_model(model, criterion, optimizer, num_epochs, dataloader, device):
     all_true_labels = []
@@ -79,12 +81,37 @@ def graf(loss, acc, f1, epoch_num):
 
 if __name__ == "__main__":
     epoch_num = 20
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')    
+    vocab_lables = read_vocab('data/vocab_labels.txt')
+    vocab = read_vocab('data/vocab.txt')
     n_classes = len(vocab_lables)
+
+    train_df = pd.read_csv('data/train_df.csv')
+    val_df = pd.read_csv('data/val_df.csv')
+
+    datasets = {
+    'train': TokenDataset(train_df),
+    'val': TokenDataset(val_df)
+    }
+
+    dataloader = {
+        'train':
+        torch.utils.data.DataLoader(datasets['train'],
+                                batch_size=16,
+                                shuffle=True,
+                                num_workers=0),  
+        'val':
+        torch.utils.data.DataLoader(datasets['val'],
+                                batch_size=16,
+                                shuffle=False,
+                                num_workers=0)  
+    }
 
     model = CNN_LSTM(len(vocab), n_classes = n_classes).to(device)
     criterion = nn.CrossEntropyLoss().to(device)
     optimizer = Adam(model.parameters(), lr = 3e-4)
-    
+
     all_true_labels, all_preds, inputs_str, loss, acc, f1 = train_model(model, criterion, optimizer, epoch_num, dataloader,device)
     graf(loss, acc, f1)
+
+    torch.save(model.state_dict(), 'weights/cnn_lstm.pth')

@@ -119,4 +119,6 @@ if __name__ == "__main__":
 
     save_vocab(vocab, 'data/vocab.txt')
     save_vocab(vocab, 'data/vocab_lables.txt')
-    vocab = read_vocab('data/vocab.txt')
+
+    train_df.to_csv('data/train_df.csv')
+    val_df.to_csv('data/val_df.csv')
