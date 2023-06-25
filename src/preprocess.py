@@ -1,4 +1,4 @@
-from markup_utils import *
+from utils.markup_utils import *
 from sklearn.model_selection import train_test_split
 from torchtext.vocab import build_vocab_from_iterator
 import pandas as pd
@@ -12,7 +12,6 @@ warnings.filterwarnings('ignore')
 PATH1 = os.path.join('data','train_part_1')
 PATH2 = os.path.join('data','train_part_2')
 PATH3 = os.path.join('data','train_part_3')
-PATH4 = os.path.join('data','test_ner_only')
 
 
 class TokenDataset(torch.utils.data.Dataset):
@@ -111,7 +110,7 @@ if __name__ == "__main__":
     train_df,max_len1 = make_tl(train_df,vocab,vocab_lables)
     val_df,max_len2 = make_tl(val_df,vocab,vocab_lables)
 
-    train_df = make_pad(train_df,)
+    train_df = make_pad(train_df)
     val_df = make_pad(val_df)
 
     text_vocab_len = len(vocab)
