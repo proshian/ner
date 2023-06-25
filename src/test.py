@@ -52,9 +52,11 @@ if __name__ == "__main__":
     # загружаем модель
     model = CNN_LSTM(len(vocab), n_classes = len(vocab_lables)).to(device)
     model.load_state_dict(torch.load('weight/cnn_lstm.pth'))
-
+    
+    # делаем предсказания
     all_true,all_pred = make_test(model,test_dataloader,dataset)
     
+    # визуализация
     df_test_viz = remove_pad(test_df, vocab,vocab_lables,all_true,all_pred)
     row_idx = 4
     row = df_test_viz['sentence'][row_idx]
