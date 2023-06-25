@@ -11,7 +11,7 @@ class CNN_LSTM(nn.Module):
         self.hidden_size = hidden_size
         self.lstm_layer = nn.LSTM(input_size, hidden_size, batch_first=True)
         self.fc = nn.Linear(self.hidden_size, n_classes)
-        outputs = []
+        
 
     def forward(self, inputs):
         projections = self.embeddings_layer.forward(inputs) 
