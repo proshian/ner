@@ -1,9 +1,10 @@
 import pandas as pd
 import os
-import tqdm
+from tqdm import tqdm
 import re
 from typing import List
 import numpy as np
+
 
 # имена сущностей
 NAMES = ['BIN', 'SOC', 'MET', 'CMP', 'ECO', 'INST', 'ACT', 'QUA']
@@ -69,6 +70,7 @@ def make_ann(filename: str, path: str, on_bad_lines: str = "skip") -> pd.DataFra
     ann_df.reset_index(drop= True , inplace= True )
 
     # Чистка текстовых данных?
+    # print(ann_df)
     ann_df['words'] = ann_df['words'].apply(lambda x: my_split(x.split(" ")))
     ann_df['words'] = ann_df['words'].apply(lambda x: del_all(x))
     ann_df['words'] = ann_df['words'].apply(lambda x: [item.strip() for item in x if item not in ['','»', '«',':',' ']])
@@ -87,13 +89,13 @@ def make_text(file, df, path):
     
     """
     # открываем файл и записываем его в dataframe
-    with open(path+'/'+file+'.txt') as f:
+    with open(path+'/'+file+'.txt', encoding='utf-8') as f:
         lines = f.readlines()
     text_df = pd.DataFrame({'word':lines})
     
     # считаем длины строк для удобства дальнейшей разметки
     text_df.insert(1, 'len' , text_df['word'].copy())
-    text_df['len'] = text_df['len'].apply(lambda x: len(x)) # считаем длину строки
+    text_df.iloc[:,1] = text_df['len'].apply(lambda x: len(x)) # считаем длину строки
     new_lens = [text_df['len'][0]] # считаем длину предыдущих строк + длина новой строки
     for i in range(1, len(list(text_df['len']))):
         new_lens.append(sum(list(text_df['len'])[:i+1]))
@@ -205,7 +207,7 @@ def find_rows(txt_df, ann_df):
             start = txt_df['new_len'][j]-txt_df['len'][j]
             end = txt_df['new_len'][j]
             if int(ann_df['coords'][i][0]) in np.arange(start, end):
-                ann_df['idx'][i] = j
+                ann_df.iloc[i,4] = j
                 break
             else:
                 pass
@@ -239,6 +241,8 @@ def remove_punctuation(sentence):
     """
     cleaned_sentence = re.sub(r'[?!\'"#]', '', sentence)
     cleaned_sentence = re.sub(r'[-.,;:(){}\/<>№»«|-|_]', '', cleaned_sentence)
+    cleaned_sentence = cleaned_sentence.replace('┌───┬──────────────┬───────────────────────────────────────────────────────────────┬────────────────────────────────────────────────────────────────────────────┬─','')
+    cleaned_sentence = cleaned_sentence.replace('├────────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┬────┼──────┬──────┬───────┬──────┬───────┬───────┬───────┬───────┬───────┬───────┼─','')
     return cleaned_sentence
 
 
