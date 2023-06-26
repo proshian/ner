@@ -86,8 +86,8 @@ if __name__ == "__main__":
     vocab = read_vocab('data/vocab.txt')
     n_classes = len(vocab_lables)
 
-    train_df = pd.read_csv('data/train_df.csv')
-    val_df = pd.read_csv('data/val_df.csv')
+    train_df = pd.read_pickle('data/train_df.pkl')
+    val_df = pd.read_pickle('data/val_df.pkl')
 
     text_vocab_len = len(vocab)
     target_vocab_len = len(vocab_lables)
