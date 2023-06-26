@@ -1,14 +1,13 @@
 from sklearn.metrics import f1_score, accuracy_score
 import torch
 import tqdm
-from preprocess import read_vocab, TokenDataset, make_tl, make_pad
+from preprocess import read_vocab, TokenDataset
 from utils.markup_utils import make_data
 from model import CNN_LSTM
 import pandas as pd
 from utils.postprocess_utils import remove_pad, make_show
 from ipymarkup import show_span_box_markup
 import os
-PATH4 = os.path.join('data','test_ner_only')
 
 
 def make_test(model,dataloader,device):
@@ -36,22 +35,23 @@ if __name__ == "__main__":
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')  
 
     # загружаем словарь 
-    vocab_lables = read_vocab('data/vocab_labels.txt')
+    vocab_lables = read_vocab('data/vocab_lables.txt')
     vocab = read_vocab('data/vocab.txt')
 
     # загружаем данные
-    filenames = [filename[:-4] for filename in os.listdir(PATH4) if filename[-4:] == '.txt']
-    test_df = make_data(PATH4, filenames)
-    test_df,max_len1 = make_tl(test_df,vocab,vocab_lables)
-    test_df = make_pad(test_df)
+    test_df_1 = pd.read_csv('data/test_df_1.csv',index_col=0)
+    test_df_2 = pd.read_csv('data/test_df_2.csv',index_col=0)
+    test_df = pd.concat([test_df_1,test_df_2], ignore_index=True)
 
     # финальная подготовка данных
-    dataset =  TokenDataset(test_df)
+    text_vocab_len = len(vocab)
+    target_vocab_len = len(vocab_lables)
+    dataset =  TokenDataset(test_df,text_vocab_len,target_vocab_len)
     test_dataloader = torch.utils.data.DataLoader(dataset, batch_size=2, shuffle=False, num_workers=0)
 
     # загружаем модель
     model = CNN_LSTM(len(vocab), n_classes = len(vocab_lables)).to(device)
-    model.load_state_dict(torch.load('weight/cnn_lstm.pth'))
+    model.load_state_dict(torch.load('weights/cnn_lstm.pth'))
     
     # делаем предсказания
     all_true,all_pred = make_test(model,test_dataloader,dataset)

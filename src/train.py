@@ -89,9 +89,11 @@ if __name__ == "__main__":
     train_df = pd.read_csv('data/train_df.csv')
     val_df = pd.read_csv('data/val_df.csv')
 
+    text_vocab_len = len(vocab)
+    target_vocab_len = len(vocab_lables)
     datasets = {
-    'train': TokenDataset(train_df),
-    'val': TokenDataset(val_df)
+    'train': TokenDataset(train_df,text_vocab_len,target_vocab_len),
+    'val': TokenDataset(val_df,text_vocab_len,target_vocab_len)
     }
 
     dataloader = {

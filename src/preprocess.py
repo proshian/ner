@@ -12,6 +12,7 @@ warnings.filterwarnings('ignore')
 PATH1 = os.path.join('data','train_part_1')
 PATH2 = os.path.join('data','train_part_2')
 PATH3 = os.path.join('data','train_part_3')
+PATH4 = os.path.join('data','test_ner_only')
 
 
 class TokenDataset(torch.utils.data.Dataset):
@@ -99,6 +100,9 @@ if __name__ == "__main__":
     train_df_3 = make_data(PATH3, filenames)
     train_df = pd.concat([train_df, train_df_3], ignore_index=True)
 
+    filenames = [filename[:-4] for filename in os.listdir(PATH4) if filename[-4:] == '.txt']
+    test_df = make_data(PATH4, filenames)
+
     train_df, val_df = train_test_split(train_df, test_size=0.1)
     train_df.reset_index(drop = True, inplace= True)
     val_df.reset_index(drop = True, inplace= True)
@@ -109,9 +113,11 @@ if __name__ == "__main__":
 
     train_df,max_len1 = make_tl(train_df,vocab,vocab_lables)
     val_df,max_len2 = make_tl(val_df,vocab,vocab_lables)
+    test_df,max_len1 = make_tl(test_df,vocab,vocab_lables)
 
     train_df = make_pad(train_df)
     val_df = make_pad(val_df)
+    test_df = make_pad(test_df)
 
     text_vocab_len = len(vocab)
     target_vocab_len = len(vocab_lables)
@@ -121,3 +127,8 @@ if __name__ == "__main__":
 
     train_df.to_csv('data/train_df.csv')
     val_df.to_csv('data/val_df.csv')
+    test_df1 = test_df.iloc[:15000,:]
+    test_df1.to_csv('data/test_df_1.csv')
+    test_df2 = test_df.iloc[15000:,:]
+    test_df2.reset_index(inplace= True)
+    test_df2.to_csv('data/test_df_2.csv')
