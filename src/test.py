@@ -43,7 +43,6 @@ if __name__ == "__main__":
     test_df_2 = pd.read_pickle('data/test_df_2.pkl')
     test_df = pd.concat([test_df_1,test_df_2], ignore_index=True)
     del test_df['index']
-    print(test_df)
 
     # финальная подготовка данных
     text_vocab_len = 21185
