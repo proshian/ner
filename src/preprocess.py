@@ -125,10 +125,10 @@ if __name__ == "__main__":
     save_vocab(vocab, 'data/vocab.txt')
     save_vocab(vocab, 'data/vocab_lables.txt')
 
-    train_df.to_csv('data/train_df.csv')
-    val_df.to_csv('data/val_df.csv')
+    train_df.to_pickle('data/train_df.pkl')
+    val_df.to_pickle('data/val_df.pkl')
     test_df1 = test_df.iloc[:15000,:]
-    test_df1.to_csv('data/test_df_1.csv')
+    test_df1.to_pickle('data/test_df_1.pkl')
     test_df2 = test_df.iloc[15000:,:]
     test_df2.reset_index(inplace= True)
-    test_df2.to_csv('data/test_df_2.csv')
+    test_df2.to_pickle('data/test_df_2.pkl')

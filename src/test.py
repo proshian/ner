@@ -1,6 +1,6 @@
 from sklearn.metrics import f1_score, accuracy_score
 import torch
-import tqdm
+from tqdm import tqdm
 from preprocess import read_vocab, TokenDataset
 from utils.markup_utils import make_data
 from model import CNN_LSTM
@@ -39,22 +39,24 @@ if __name__ == "__main__":
     vocab = read_vocab('data/vocab.txt')
 
     # загружаем данные
-    test_df_1 = pd.read_csv('data/test_df_1.csv',index_col=0)
-    test_df_2 = pd.read_csv('data/test_df_2.csv',index_col=0)
+    test_df_1 = pd.read_pickle('data/test_df_1.pkl')
+    test_df_2 = pd.read_pickle('data/test_df_2.pkl')
     test_df = pd.concat([test_df_1,test_df_2], ignore_index=True)
+    del test_df['index']
+    print(test_df)
 
     # финальная подготовка данных
-    text_vocab_len = len(vocab)
-    target_vocab_len = len(vocab_lables)
+    text_vocab_len = 21185
+    target_vocab_len = 17
     dataset =  TokenDataset(test_df,text_vocab_len,target_vocab_len)
-    test_dataloader = torch.utils.data.DataLoader(dataset, batch_size=2, shuffle=False, num_workers=0)
+    test_dataloader = torch.utils.data.DataLoader(dataset, batch_size=16, shuffle=False, num_workers=0)
 
     # загружаем модель
-    model = CNN_LSTM(len(vocab), n_classes = len(vocab_lables)).to(device)
+    model = CNN_LSTM(21185, n_classes = 17).to(device)
     model.load_state_dict(torch.load('weights/cnn_lstm.pth'))
     
     # делаем предсказания
-    all_true,all_pred = make_test(model,test_dataloader,dataset)
+    all_true,all_pred = make_test(model,test_dataloader,device)
     
     # визуализация
     df_test_viz = remove_pad(test_df, vocab,vocab_lables,all_true,all_pred)
