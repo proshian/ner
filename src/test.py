@@ -35,8 +35,8 @@ if __name__ == "__main__":
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')  
 
     # загружаем словарь 
-    vocab_lables = read_vocab('data/vocab_lables.txt')
-    vocab = read_vocab('data/vocab.txt')
+    vocab_lables = read_vocab('data/vocab_lables.pkl')
+    vocab = read_vocab('data/vocab.pkl')
 
     # загружаем данные
     test_df_1 = pd.read_pickle('data/test_df_1.pkl')
@@ -45,13 +45,13 @@ if __name__ == "__main__":
     del test_df['index']
 
     # финальная подготовка данных
-    text_vocab_len = 21185
-    target_vocab_len = 17
+    text_vocab_len = len(vocab)
+    target_vocab_len = len(vocab_lables)
     dataset =  TokenDataset(test_df,text_vocab_len,target_vocab_len)
     test_dataloader = torch.utils.data.DataLoader(dataset, batch_size=16, shuffle=False, num_workers=0)
 
     # загружаем модель
-    model = CNN_LSTM(21185, n_classes = 17).to(device)
+    model = CNN_LSTM(len(vocab), n_classes = len(vocab_lables)).to(device)
     model.load_state_dict(torch.load('weights/cnn_lstm.pth'))
     
     # делаем предсказания

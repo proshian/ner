@@ -82,8 +82,8 @@ def graf(loss, acc, f1, epoch_num):
 if __name__ == "__main__":
     epoch_num = 20
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')    
-    vocab_lables = read_vocab('data/vocab_labels.txt')
-    vocab = read_vocab('data/vocab.txt')
+    vocab_lables = read_vocab('data/vocab_labels.pkl')
+    vocab = read_vocab('data/vocab.pkl')
     n_classes = len(vocab_lables)
 
     train_df = pd.read_pickle('data/train_df.pkl')

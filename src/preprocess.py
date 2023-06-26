@@ -3,6 +3,7 @@ from sklearn.model_selection import train_test_split
 from torchtext.vocab import build_vocab_from_iterator
 import pandas as pd
 import numpy as np
+import pickle
 import torch
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import warnings
@@ -73,17 +74,12 @@ def one_hot(x: np.ndarray, vocab_len: int) -> np.ndarray:
     return encoded
 
 def save_vocab(vocab, path):
-    with open(path, 'w+', encoding='utf-8') as f:     
-        for token, index in vocab.get_stoi().items():
-            f.write(f'{index}\t{token}\n')
+    with open(path, 'wb') as fp:
+        pickle.dump(vocab_lables, fp)
 
 def read_vocab(path):
-    vocab = dict()
-    with open(path, 'r', encoding='utf-8') as f:
-        for line in f:
-            index, token = line.split('\t')
-            token = token.replace('\n','')
-            vocab[token] = int(index)
+    with open(path, 'rb') as fp:
+        vocab = pickle.load(fp)
     return vocab
 
 
@@ -122,8 +118,8 @@ if __name__ == "__main__":
     text_vocab_len = len(vocab)
     target_vocab_len = len(vocab_lables)
 
-    save_vocab(vocab, 'data/vocab.txt')
-    save_vocab(vocab, 'data/vocab_lables.txt')
+    save_vocab(vocab, 'data/vocab.pkl')
+    save_vocab(vocab, 'data/vocab_lables.pkl')
 
     train_df.to_pickle('data/train_df.pkl')
     val_df.to_pickle('data/val_df.pkl')

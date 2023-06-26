@@ -11,3 +11,5 @@ re
 typing
 os
 matplotlib
+ipython
+pickle
